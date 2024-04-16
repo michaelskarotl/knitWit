@@ -29,6 +29,26 @@ if (!requireNamespace("tidyverse", quietly = TRUE)) {
   install.packages("tidyverse", repos = "http://cran.us.r-project.org")
 }
 
+if (!requireNamespace("glue", quietly = TRUE)) {
+  install.packages("glue", repos = "http://cran.us.r-project.org")
+}
+
+# install the rmarkdown package if not already installed
+if (!requireNamespace("rmarkdown", quietly = TRUE)) {
+  install.packages("rmarkdown", repos = "http://cran.us.r-project.org")
+}
+
+# if dplyr is not installed, install it
+if (!requireNamespace("dplyr", quietly = TRUE)) {
+  install.packages("dplyr", repos = "http://cran.us.r-project.org")
+}
+
+# install the stringr package if not already installed
+
+if (!requireNamespace("stringr", quietly = TRUE)) {
+  install.packages("stringr", repos = "http://cran.us.r-project.org")
+}
+
 # install DBI package if not already installed
 if (!requireNamespace("DBI", quietly = TRUE)) {
   install.packages("DBI", repos = "http://cran.us.r-project.org")
@@ -54,45 +74,44 @@ if (!requireNamespace("RSQLite", quietly = TRUE)) {
   install.packages("RSQLite", repos = "http://cran.us.r-project.org")
 }
 
+# call the libraries
 
-# Call the libraries
-library(renv)
-library(optparse)
-library(tidyverse)
 library(data.table)
-library(DBI)
-library(RSQLite)
-library(languageserver)
-library(stringr)
-library(dplyr, warn.conflicts = FALSE)
-library(dbplyr)
-library(knitr)
-library(devtools)
-library(conflr)
-library(magrittr)
-library(ggplot2)
-library(tidyverse)
-library(binom)
-library(glue)
-library(dplyr)
 library(jsonlite)
+library(tidyverse)
+library(glue)
+library(rmarkdown)
+library(dplyr)
+library(stringr)
+library(DBI)
+library(languageserver)
+library(devtools)
+library(knitr)
+library(RSQLite)
+
+
+make_libs_obj <- function(file){
+  # :param file: the csv file that contains the libraries that are required
+  # :return: a data of the libraries that are required
+
+  # load the csv file into a data frame with the data.table package
+  df <- data.table::fread(file, header = TRUE)
+  return df
+}
 
 
 
-# Define the command line arguments
 
-option_list <- list(
-  make_option(c("-t", "--tsv"), type = "character", default = NULL,
-              help = "The tsv file with the list of the PCLs to knitted. The csv file should have four columns. \n
-              The first column (PCL_ID) should be the path to the PCL-ID that needs to be knitted \n
-              The second column (Report_File) should be the name of the final report file that has the knitting instructions for the subsequent analyses inside the PCL \n
-              The third column (Appendix_RMDs) should be a comma separated list of the appendix RMD files. We will check that the appendix RMD files are in the PCL directory before knitting the PCL \n
-              The fourth column (Library_File) will be the path to the library file that will be sourced in the knitting process. We will need to make sure that the libraries are installed in the R environment before knitting the PCL. \n
-              ")
-)
 
-# Parse the command line arguments
-opt <- parse_args(OptionParser(option_list = option_list))
+
+
+
+
+
+
+
+
+
 
 # load the csv file into a data frame
 df <- data.table::fread(opt$csv, header = TRUE)
