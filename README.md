@@ -1,6 +1,6 @@
 # knitwit R package
 
-![knitwit](images/knitwit.png)
+![knitwit](images/knitwit.jpeg)
 
 ## Description
 
