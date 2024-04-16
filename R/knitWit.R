@@ -1,78 +1,32 @@
 #!/usr/bin/env Rscript
 
 ####################################
-# Project Begin: February 27, 2024
-# Project End: 
+# Project Begin: April 16, 2024
+# Project End: lol
 # Author: Michael Skaro
-# Purpose: Use the skeleton script to create a helper script to add a table to the 
-# rna_val_db in the /Users/michael.skaro/Research/tempusRepos/bioinf-rna-onco-verification/device_validation/rnaval_db/rnaval_data/rnaval.db
-# directory. 
-# Functions:
-#   1. Load the database with RSQL-lite
-#   2. filter the database for the database for the desired data product
-#   3. create a table to add to the database
-#   4. file io, removed Mar 5, 2024. 
-# Usage: R script to be invoked and interacted with from the terminal.
-# Parameters: 
-# Rscript Rscript rna_val_db_to_rad-study-design_DPs.R -i /Users/michael.skaro/Research/tempusRepos/bioinf-rna-onco-verification/device_validation/rnaval_db/rnaval_data/db/rnaval.db -p 1.3 -o .  -x /Users/michael.skaro/Research/tempusRepos/bioinf-rna-onco-verification/helpers/db_to_rad/PCL-00089_ref.txt -t BFXA-4210
-# ticket ID: "BFXA-4210_RNA-val_DB_to_rad-study-x_DPs"
-# Note: Once the output csv has been accepted by the product team, the output will be to append the table onto the 
-# Things to note: UHR = 6 well-known gene fusions used for our benchmarking study on short-read sequencing data include BCAS4-BCAS3, BCR-ABL1, ARFGEF2-SULF2, RPS6KB1-TMEM49(VMP1), TMPRSS2-ERG, and GAS6-RASA3.
-# Outputs: output a flat file to the output directory, an renv.lock and a session info file to the output directory
+# Some useful keyboard shortcuts for package authoring:
+#
+#   Install Package:           'Cmd + Shift + B'
+#   Check Package:             'Cmd + Shift + E'
+#   Test Package:              'Cmd + Shift + T'
 
-readRenviron("~/.Renviron")
-if (!requireNamespace("renv", quietly = TRUE)) {
-  install.packages("renv", repos = "http://cran.us.r-project.org")
+# This script will knit the PCLs in the PCL directory. The PCLs are the directories that contain the RMD files for the analyses. 
+# The script will check that the appendix RMD files are in the PCL directory before knitting the PCL. The script will also check 
+# that the libraries are installed in the R environment before knitting the PCL.
+
+# if data table is not installed, install it
+
+if (!requireNamespace("data.table", quietly = TRUE)) {
+  install.packages("data.table", repos = "http://cran.us.r-project.org")
 }
-
-if (file.exists("renv.lock")) {
-  library(renv)
-  renv::restore()
-  # Call the libraries
-  library(renv)
-  library(optparse)
-  library(tidyverse)
-  library(data.table)
-  library(DBI)
-  library(RSQLite)
-  library(languageserver)
-  # included in tidyverse install
-  library(stringr)
-  library(dplyr, warn.conflicts = FALSE)
-  library(dbplyr)
-  library(knitr)
-  library(devtools)
-  library(conflr)
-}
-
-if (!file.exists("renv.lock")) {
-  renv::init()
-}
-
 # install jsonlite package if not already installed
 if (!requireNamespace("jsonlite", quietly = TRUE)) {
   install.packages("jsonlite", repos = "http://cran.us.r-project.org")
 }
 
-
-
-# Now that we have a consistent R environment, we can install the necessary packages
-print("Installing the necessary packages with renv loaded, this takes a while the first time, go get some coffee []D")
-
-if (!requireNamespace("optparse", quietly = TRUE)) {
-  install.packages("optparse", repos = "http://cran.us.r-project.org")
-}
-
-# install the libraries from the cran repo and the bioconductor repo to conduct the differential expression analysis in a nexflow pipeline
-
 # install the tidyverse package if not already installed
 if (!requireNamespace("tidyverse", quietly = TRUE)) {
   install.packages("tidyverse", repos = "http://cran.us.r-project.org")
-}
-
-# install data.table package if not already installed
-if (!requireNamespace("data.table", quietly = TRUE)) {
-  install.packages("data.table", repos = "http://cran.us.r-project.org")
 }
 
 # install DBI package if not already installed
