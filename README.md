@@ -38,12 +38,12 @@ library(knitwit)
 
 # Create a knitting pattern
 pattern <- create_pattern(
-  title: "`r params$study_id` Nucleic Acid Extraction QC Report"
+  title: "`r params$study_id` A report"
 author: Michael Skaro
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 params:
-  study_id: PCL-00230
-  Pipeline_version: 1.3.0
+  study_id: studi_id_123
+  Pipeline_version: 1.0.0
 output: 
   conflr::confluence_document:
     space_key: "XXXXXXXX"
