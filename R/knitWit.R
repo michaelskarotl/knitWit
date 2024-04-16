@@ -249,6 +249,99 @@ check_files_knitted <- function(files_knitted){
 
 }
 
+# make a function to knit files to PDF files
+
+knit_files_to_PDF <- function(df){
+  # :param df: a data table that contains the PCL_ID, Report_File, Appendix_RMDs, and Library_File
+  # :return: a list of the files that were knitted
+
+  # create a list of the files that were knitted
+  files_knitted <- list()
+
+  # iterate through the data table and knit the files
+  for (i in 1:nrow(df)) {
+    # knit the report file
+    rmarkdown::render(input = df$Report_File[i], output_format = "pdf_document", output_file = df$PCL_ID[i])
+
+    # knit the appendix RMD files
+    appendix_rmds <- unlist(strsplit(df$Appendix_RMDs[i], ","))
+    for (j in 1:length(appendix_rmds)) {
+      rmarkdown::render(input = file.path(df$PCL_ID[i], appendix_rmds[j]), output_format = "pdf_document", output_file = file.path(df$PCL_ID[i], str_replace(appendix_rmds[j], ".Rmd", ".pdf")))
+    }
+
+    # knit the library file
+    rmarkdown::render(input = df$Library_File[i], output_format = "pdf_document", output_file = file.path(df$PCL_ID[i], "library.pdf"))
+
+    # add the files that were knitted to the list of the files that were knitted
+    files_knitted <- c(files_knitted, df$PCL_ID[i])
+  }
+
+  return files_knitted
+}
+
+# make a function to check that the files were knitted into PDF files
+
+check_files_knitted_PDF <- function(files_knitted){
+  # :param files_knitted: a list of the files that were knitted
+  # :return: a list of the files that were not knitted
+
+  # create a list of the files that were not knitted
+  files_not_knitted <- list()
+
+  # iterate through the list of the files that were knitted and check that the files were knitted
+  for (i in 1:length(files_knitted)) {
+    if (!file.exists(file.path(files_knitted[i], "index.pdf"))) {
+      files_not_knitted <- c(files_not_knitted, files_knitted[i])
+    }
+  }
+
+  # check the length of the list of the files that were not knitted
+  # is greater than 0, then return the list of the files that were not knitted
+
+  if (length(files_not_knitted) > 0) {
+    print("The following files were not knitted:")
+    for (i in 1:length(files_not_knitted)) {
+      print(files_not_knitted[i])
+      print(" ")
+      print("Please check the files and try again.")
+    }
+
+  } else {
+    print("All of the files were knitted successfully.")
+  }
+
+}
+
+# make a function to knit files into confluence, this will require the confluence API
+
+knit_files_to_confluence <- function(df){
+  # :param df: a data table that contains the PCL_ID, Report_File, Appendix_RMDs, and Library_File
+  # :return: a list of the files that were knitted
+
+  # create a list of the files that were knitted
+  files_knitted <- list()
+
+  # iterate through the data table and knit the files
+  for (i in 1:nrow(df)) {
+    # knit the report file
+    rmarkdown::render(input = df$Report_File[i], output_format = "confluence", output_file = df$PCL_ID[i])
+
+    # knit the appendix RMD files
+    appendix_rmds <- unlist(strsplit(df$Appendix_RMDs[i], ","))
+    for (j in 1:length(appendix_rmds)) {
+      rmarkdown::render(input = file.path(df$PCL_ID[i], appendix_rmds[j]), output_format = "confluence", output_file = file.path(df$PCL_ID[i], str_replace(appendix_rmds[j], ".Rmd", ".confluence")))
+    }
+
+    # knit the library file
+    rmarkdown::render(input = df$Library_File[i], output_format = "confluence", output_file = file.path(df$PCL_ID[i], "library.confluence"))
+
+    # add the files that were knitted to the list of the files that were knitted
+    files_knitted <- c(files_knitted, df$PCL_ID[i])
+  }
+
+  return files_knitted
+}
+
 
 
 
