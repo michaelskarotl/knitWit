@@ -99,7 +99,91 @@ make_libs_obj <- function(file){
   return df
 }
 
+# make a function to iterate through the make_libs_df and install each of the libraries
+# the first column should be the library name and the second column should be the version of the library
+# finally the third column should be the repository where the library is located. For example we will
+# use the dpyr package as an example. The first column will be dplyr, the second column will be 1.0.0
+# and the third column will be http://cran.us.r-project.org
 
+install_libs <- function(df){
+  # :param df: a data frame that contains the libraries that are required
+  # :return: a list of the libraries that were installed
+
+  counter = 0
+  # iterate through the data frame and install each of the libraries
+  for (i in 1:nrow(df)) {
+    # install the library
+    # if the second column is CRAN, then install the library from CRAN
+
+    if (df$Repository[i] == "CRAN") {
+      install.packages(df$Library[i], repos = "http://cran.us.r-project.org")
+    }
+
+    # if the second column is GitHub, then install the library install devtools and install the library from GitHub
+
+    if (df$Repository[i] == "GitHub") {
+      install.packages("devtools", repos = "http://cran.us.r-project.org")
+      devtools::install_github(df$Library[i])
+    }
+
+    # if the second column is Bioconductor, then install the biocmanager package and install the library from Bioconductor
+
+    if (df$Repository[i] == "Bioconductor") {
+      if (!requireNamespace("BiocManager", quietly = TRUE)) {
+        install.packages("BiocManager", repos = "http://cran.us.r-project.org")
+      }
+      BiocManager::install(df$Library[i])
+    }
+
+    # if the second column is none of the above, flag an error
+
+    if (df$Repository[i] != "CRAN" & df$Repository[i] != "GitHub" & df$Repository[i] != "Bioconductor") {
+      stop("The repository is not valid. Please check the repository and try again.")
+    }
+    
+    if(counter == 0){
+      # create a list of the libraries that were installed
+      libs_installed <- list(df$Library[i])
+      counter = counter + 1
+    } else {
+      libs_installed <- c(libs_installed, df$Library[i])
+    }
+  }
+  return libs_installed
+}
+
+# make a function to take the list of the libraries that were installed and check that the libraries are installed
+
+check_libs <- function(libs_installed){
+  # :param libs_installed: a list of the libraries that were installed
+  # :return: a list of the libraries that were not installed
+
+  # create a list of the libraries that were not installed
+  libs_not_installed <- list()
+
+  # iterate through the list of the libraries that were installed and check that the libraries are installed
+  for (i in 1:length(libs_installed)) {
+    if (!requireNamespace(libs_installed[i], quietly = TRUE)) {
+      libs_not_installed <- c(libs_not_installed, libs_installed[i])
+    }
+  }
+
+  # check the length of the list of the libraries that were not installed
+  # is greater than 0, then return the list of the libraries that were not installed
+
+  if (length(libs_not_installed) > 0) {
+    print("The following libraries were not installed:")
+    for (i in 1:length(libs_not_installed)) {
+      print(libs_not_installed[i])
+      print(" ")
+      print("Please install the library outside of the library and try again.")
+    }
+
+  } else {
+    print("All of the libraries were installed successfully.")
+  }
+
+}
 
 
 
